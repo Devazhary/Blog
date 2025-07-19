@@ -1,0 +1,33 @@
+CREATE DATABASE IF NOT EXISTS blog;
+
+USE blog;
+
+CREATE TABLE IF NOT EXISTS `users` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(100) NOT NULL,
+    `email` VARCHAR(100) UNIQUE,
+    `password` VARCHAR(100) NOT NULL,
+    `img` VARCHAR(255),
+    `joined_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS `posts` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `title` VARCHAR(255) NOT NULL,
+    `description` TEXT DEFAULT NULL,
+    `content` TEXT NOT NULL,
+    `img` VARCHAR(255),
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `author_id` INT NOT NULL,
+    FOREIGN KEY (`author_id`) REFERENCES users(`id`) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS `comments` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `content` TEXT NOT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `user_id` INT NOT NULL,
+    `post_id` INT NOT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES users(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`post_id`) REFERENCES posts(`id`) ON DELETE CASCADE
+);
