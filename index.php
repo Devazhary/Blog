@@ -1,6 +1,33 @@
 <?php require_once 'inc/header.php';
 require_once 'db/connectionDB.php';
-$query = "SELECT * FROM posts ORDER BY created_at DESC";
+
+if(isset($_GET['page'])){
+  $page = $_GET['page'];
+}else{
+  $page = 1;
+}
+
+$limit = 3;
+$offset = ($page - 1) * $limit;
+
+
+$query2 = "SELECT COUNT(*) AS total FROM posts";
+$queResult = mysqli_query($conn,$query2);
+$totalPosts = mysqli_fetch_assoc($queResult)['total'];
+
+$numOfPages = ceil($totalPosts / $limit);
+
+if($page < 1)
+{
+  header("location:index.php?page=1");
+  exit();
+}else if($page > $numOfPages)
+{
+  header("location:index.php?page=$numOfPages");
+  exit();
+}
+
+$query = "SELECT * FROM posts ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
 $result = mysqli_query($conn,$query);
 $posts = mysqli_fetch_all($result, MYSQLI_ASSOC);
 ?>
@@ -64,6 +91,15 @@ $posts = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
         </div>
       </div>
+      <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+      <ul class="pagination">
+        <li class="page-item <?php if($page == 1) echo 'disabled' ?>"><a class="page-link" href="index.php?page=<?= $page - 1 ?>">Previous</a></li>
+        <?php for($i = 1; $i <= $numOfPages; $i++): ?>
+        <li class="page-item"><a class="page-link" href="index.php?page=<?= $i ?>"><?= $i ?></a></li>
+        <?php endfor ?>
+        <li class="page-item <?php if($page == $numOfPages) echo 'disabled' ?>"><a class="page-link" href="index.php?page=<?= $page + 1 ?>">Next</a></li>
+      </ul>
+    </nav>
     </div>
 
  
